@@ -1,6 +1,6 @@
-# Kirukals
+# Kirukkals
 
-Kirukals is a online multiplayer guessing game. You can create lobbies with your friends where you can draw pictures and guess the correct answer.
+Kirukkals is a online multiplayer guessing game. You can create lobbies with your friends where you can draw pictures and guess the correct answer.
 
 ## Technologies
 
