@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, Heading, Avatar, Text } from "@chakra-ui/react";
-const PlayerList = ({ players }) => {
+const LeaderBoard = ({ players }) => {
 	return (
-		<Box margin="4">
+		<Box height="80vh" width="20%">
 			<Heading as="h2" size="lg">
-				Players
+				LeaderBoard
 			</Heading>
 			<Box marginTop="2">
 				{Object.values(players).map(player => (
@@ -27,4 +27,4 @@ const PlayerList = ({ players }) => {
 	);
 };
 
-export default PlayerList;
+export default LeaderBoard;

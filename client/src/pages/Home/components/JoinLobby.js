@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-
+//Chakra UI;
+import { Button } from "@chakra-ui/button";
+import { Input } from "@chakra-ui/input";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Flex } from "@chakra-ui/react";
 const JoinLobby = ({ joinLobby }) => {
 	const [lobbyID, setLobbyID] = useState("");
 
@@ -12,20 +16,26 @@ const JoinLobby = ({ joinLobby }) => {
 		joinLobby(lobbyID);
 	};
 	return (
-		<div>
-			<form onSubmit={joinLobbyHandler}>
-				<div>
-					<label htmlFor="lobbyID">Lobby ID</label>
-					<input
-						name="lobbyID"
-						type="text"
-						value={lobbyID}
-						onChange={handleInput}
-					/>
-				</div>
-				<button type="submit">Join Lobby</button>
-			</form>
-		</div>
+		<Flex
+			as="form"
+			alignItems="flex-end"
+			marginTop="5"
+			onSubmit={joinLobbyHandler}
+		>
+			<FormControl paddingRight="3">
+				<FormLabel htmlFor="lobbyID" hidden>
+					Lobby ID
+				</FormLabel>
+				<Input
+					placeholder="Lobby ID"
+					name="lobbyID"
+					type="text"
+					value={lobbyID}
+					onChange={handleInput}
+				/>
+			</FormControl>
+			<Button type="submit">Join Lobby</Button>
+		</Flex>
 	);
 };
 

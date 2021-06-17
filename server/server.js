@@ -21,7 +21,8 @@ io.on("connection", socket => {
 	socket.on("join-room", lobbyID => {
 		socket.join(lobbyID);
 		let lobby = lobbies[lobbyID];
-		let playerName = UsernameGenerator.generateUsername("-");
+		let playerName = UsernameGenerator.generateUsername(" ", 10);
+
 		if (lobby) {
 			let player = lobby.players[socket.id];
 			if (player === undefined) {

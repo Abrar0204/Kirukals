@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useSocket } from "../../../context/socketContext";
+import { useSocket } from "../../../../context/socketContext";
 import SendMessage from "./SendMessage";
 import ChatList from "./ChatList";
-
+//ChakraUI
+import { Flex } from "@chakra-ui/layout";
 const ChatBox = ({ lobbyID }) => {
 	const socket = useSocket();
 
@@ -22,10 +23,10 @@ const ChatBox = ({ lobbyID }) => {
 		socket.emit("message", message, lobbyID);
 	};
 	return (
-		<div>
+		<Flex height="80vh" flexDirection="column" width="20%">
 			<ChatList chats={chats} />
 			<SendMessage sendMessage={sendMessage} />
-		</div>
+		</Flex>
 	);
 };
 

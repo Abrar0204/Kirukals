@@ -1,6 +1,8 @@
 import React from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import JoinLobby from "./components/JoinLobby";
+//Chakra UI;
+import { Heading, Button, Box, Container } from "@chakra-ui/react";
 
 const Home = () => {
 	const history = useHistory();
@@ -23,17 +25,32 @@ const Home = () => {
 	}
 
 	return (
-		<div>
-			Home
-			<div>
-				<Link to={`/lobby/${makeRandomLobbyID(10)}`}>
-					Create a Lobby
-				</Link>
-			</div>
-			<div>
-				<JoinLobby joinLobby={joinLobby} />
-			</div>
-		</div>
+		<Container marginTop="20">
+			<Heading textAlign="center" as="h1" size="3xl" margin="8">
+				Kirukkals
+			</Heading>
+			<Box
+				padding="8"
+				bg="gray.900"
+				borderRadius="5"
+				d="flex"
+				flexDirection="column"
+				justifyContent="space-evenly"
+			>
+				<Box>
+					<Button
+						as={RouterLink}
+						to={`/lobby/${makeRandomLobbyID(10)}`}
+						width="100%"
+						colorScheme="blue"
+					>
+						Create a Lobby
+					</Button>
+
+					<JoinLobby joinLobby={joinLobby} />
+				</Box>
+			</Box>
+		</Container>
 	);
 };
 

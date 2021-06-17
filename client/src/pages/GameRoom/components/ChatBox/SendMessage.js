@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+//ChakraUI
+import { FormControl, FormLabel, Input, Button, Flex } from "@chakra-ui/react";
 const SendMessage = ({ sendMessage }) => {
 	const [message, setMessage] = useState("");
 	const handleInput = e => {
@@ -12,19 +13,28 @@ const SendMessage = ({ sendMessage }) => {
 		sendMessage(message);
 		setMessage("");
 	};
+
 	return (
-		<form onSubmit={sendMessageHandler}>
-			<div>
-				<label htmlFor="message">Message</label>
-				<input
+		<Flex
+			as="form"
+			alignItems="flex-end"
+			marginTop="5"
+			onSubmit={sendMessageHandler}
+		>
+			<FormControl paddingRight="2">
+				<FormLabel htmlFor="message" hidden>
+					Message
+				</FormLabel>
+				<Input
+					placeholder="Enter Message"
 					name="message"
 					type="text"
 					value={message}
 					onChange={handleInput}
 				/>
-			</div>
-			<button type="submit">Send</button>
-		</form>
+			</FormControl>
+			<Button type="submit">Send</Button>
+		</Flex>
 	);
 };
 
