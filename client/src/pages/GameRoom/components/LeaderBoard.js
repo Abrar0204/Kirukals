@@ -1,8 +1,12 @@
 import React from "react";
+import Timer from "./Timer";
 import { Box, Heading, Avatar, Text } from "@chakra-ui/react";
-const LeaderBoard = ({ players }) => {
+const LeaderBoard = ({ players, lobbyID }) => {
 	return (
 		<Box height="80vh" width="20%">
+			<Box>
+				<Timer lobbyID={lobbyID} />
+			</Box>
 			<Heading as="h2" size="lg">
 				LeaderBoard
 			</Heading>

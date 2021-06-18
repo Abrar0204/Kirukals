@@ -15,10 +15,14 @@ const ChatList = ({ chats }) => {
 			overflow="auto"
 			ref={chatListRef}
 		>
-			{chats.map(({ msg, sender, playerName }, index) => (
-				<Box key={index + sender} marginTop="3">
+			{chats.map(({ msg, sender, playerName, correct }, index) => (
+				<Box
+					key={index + sender}
+					marginTop="3"
+					color={correct ? "green.500" : "white"}
+				>
 					<Heading size="sm">{playerName}:</Heading>
-					<Text>{msg}</Text>
+					<Text>{correct ? "guessed the word" : msg}</Text>
 				</Box>
 			))}
 		</Flex>

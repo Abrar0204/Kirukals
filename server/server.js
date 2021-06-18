@@ -5,18 +5,16 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const path = require("path");
+
 const UsernameGenerator = require("username-generator");
+const wordgen = require("pic-word-gen");
+
 let lobbies = {};
 
 io.on("connection", socket => {
 	const id = socket.id.slice(0, 3);
-	console.log(id + " just connected");
-	//For Messaging to room
-	socket.on("message", (msg, lobbyID) => {
-		// console.log(lobbies[lobbyID].players);
-		let playerName = lobbies[lobbyID].players[socket.id].playerName;
-		socket.to(lobbyID).emit("message", msg, socket.id, playerName);
-	});
+	// console.log(id + " just connected");
+
 	//When Players join a room
 	socket.on("join-room", lobbyID => {
 		socket.join(lobbyID);
@@ -47,7 +45,7 @@ io.on("connection", socket => {
 			lobbies[lobbyID] = {
 				adminID: socket.id,
 				players: {
-					[socket.id]: { id: socket.id, admin: false, playerName },
+					[socket.id]: { id: socket.id, admin: true, playerName },
 				},
 			};
 		}
@@ -64,8 +62,112 @@ io.on("connection", socket => {
 	//Start Game
 	socket.on("start-game", (adminID, lobbyID) => {
 		if (socket.id !== adminID) return;
+		let lobbyPlayers = lobbies[lobbyID].players;
+		if (Object.keys(lobbyPlayers).length < 2) return;
+
+		lobbies[lobbyID].turns = [];
+
+		Object.keys(lobbyPlayers).forEach(playerKey =>
+			lobbies[lobbyID].turns.push(playerKey)
+		);
+
+		lobbies[lobbyID].currentPlayerIndex = lobbies[lobbyID].turns.length - 1;
+
 		socket.to(lobbyID).emit("start-game");
 	});
+
+	//Begin Round
+	socket.on("begin-round", lobbyID => {
+		let lobby = lobbies[lobbyID];
+		let currentPlayer = lobby.turns[lobby.currentPlayerIndex];
+		if (socket.id !== currentPlayer) return;
+
+		let words = [
+			wordgen.generateWord(),
+			wordgen.generateWord(),
+			wordgen.generateWord(),
+		];
+		// console.log(socket.id);
+		io.to(currentPlayer).emit("choose-word", words);
+		io.to(lobbyID).emit("player-choosing-word", currentPlayer);
+	});
+
+	//Player Chose Word
+	socket.on("word-chosen", (lobbyID, word) => {
+		let lobby = lobbies[lobbyID];
+		lobby.correctWord = word;
+		lobby.timeLimit = 60;
+		lobby.interval = setInterval(() => {
+			lobby.timeLimit--;
+			if (lobby.timeLimit < 0) {
+				lobby.timeLimit = 60;
+				clearInterval(lobby.interval);
+				io.to(lobbyID).emit("end-timer");
+			}
+			io.to(lobbyID).emit("timer");
+		}, 1000);
+		io.to(lobbyID).emit("start-timer");
+		socket.to(lobbyID).emit("word-chosen", word.length);
+	});
+
+	//Guess Word
+	socket.on("guess-word", (word, lobbyID) => {
+		// console.log(lobbies[lobbyID].players);
+
+		let lobby = lobbies[lobbyID];
+		// console.log(socket.id, lobby.turns[lobby.currentPlayerIndex]);
+		let playerName = lobby.players[socket.id].playerName;
+		//If player send message before choosing word
+		if (lobby.correctWord === undefined) {
+			return io
+				.to(lobbyID)
+				.emit("wrong-guess", word, socket.id, playerName);
+		}
+		//Checking for correct word
+		if (
+			word.toLowerCase() === lobby.correctWord.toLowerCase() &&
+			socket.id !== lobby.turns[lobby.currentPlayerIndex]
+		) {
+			io.to(lobbyID).emit("correct-guess", word, socket.id, playerName);
+		} else {
+			io.to(lobbyID).emit("wrong-guess", word, socket.id, playerName);
+		}
+	});
+
+	socket.on("time-up", lobbyID => {
+		console.log("time up by " + socket.id);
+		//Reset the timer
+		io.to(lobbyID).emit("reset-timer");
+		// let prevPlayerIndex = lobbies[lobbyID].currentPlayerIndex;
+		// // Only execute once (for current player)
+		// if (lobbies[lobbyID].turns[prevPlayerIndex] !== socket.id) return;
+
+		//Change current player
+		let currentPlayerIndex = lobbies[lobbyID].currentPlayerIndex - 1;
+
+		//Reset Round - !TODO
+		if (currentPlayerIndex < 0) {
+			currentPlayerIndex = lobbies[lobbyID].turns.length - 1;
+		}
+
+		//Update lobby to next player
+		lobbies[lobbyID].currentPlayerIndex = currentPlayerIndex;
+
+		let lobby = lobbies[lobbyID];
+		let currentPlayer = lobby.turns[currentPlayerIndex];
+
+		let words = [
+			wordgen.generateWord(),
+			wordgen.generateWord(),
+			wordgen.generateWord(),
+		];
+
+		io.to(currentPlayer).emit("choose-word", words);
+		io.to(lobbyID).emit("player-choosing-word", currentPlayer);
+	});
+
+	//End Round
+	socket.on("end-round", () => {});
 
 	//Disoconnectiong players
 	socket.on("disconnecting", () => {
@@ -90,19 +192,20 @@ io.on("connection", socket => {
 	});
 });
 
-if (process.env.NODE_ENV === "production") {
-	//Express serves up static files
-	const __dirname = path.resolve();
-	app.use(express.static(path.join(__dirname, "client", "build")));
+// if (process.env.NODE_ENV === "production") {
+//Express serves up static files
 
-	//Express return index.html
-	app.get("*", (req, res) =>
-		res.sendFile(path.join(__dirname, "client", "build", "index.html"))
-	);
-} else {
-	app.get("/", (req, res) => {
-		res.send("Kirukkals");
-	});
-}
+__dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "client", "build")));
+
+//Express return index.html
+app.get("*", (req, res) =>
+	res.sendFile(path.join(__dirname, "client", "build", "index.html"))
+);
+// } else {
+// 	app.get("/", (req, res) => {
+// 		res.send("Kirukkals");
+// 	});
+// }
 
 http.listen(process.env.PORT || 5000, () => console.log("Server Started"));

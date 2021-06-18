@@ -32,6 +32,7 @@ const Lobby = ({ match }) => {
 	}, [lobbyID, updateData, socket, history]);
 
 	const startGame = () => {
+		if (Object.keys(players).length < 2) return;
 		socket.emit("start-game", socket.id, lobbyID);
 		updateData("gameStarted", true);
 		history.push(`/lobby/${lobbyID}/game`);

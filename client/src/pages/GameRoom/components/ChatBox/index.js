@@ -10,17 +10,22 @@ const ChatBox = ({ lobbyID }) => {
 	const [chats, setChats] = useState([]);
 
 	useEffect(() => {
-		socket.on("message", (msg, sender, playerName) => {
-			setChats(prev => [...prev, { msg, sender, playerName }]);
+		socket.on("correct-guess", (msg, sender, playerName) => {
+			setChats(prev => [
+				...prev,
+				{ msg, sender, playerName, correct: true },
+			]);
+		});
+		socket.on("wrong-guess", (msg, sender, playerName) => {
+			setChats(prev => [
+				...prev,
+				{ msg, sender, playerName, correct: false },
+			]);
 		});
 	}, [socket]);
 
 	const sendMessage = message => {
-		setChats(prev => [
-			...prev,
-			{ msg: message, sender: socket.id, playerName: "You" },
-		]);
-		socket.emit("message", message, lobbyID);
+		socket.emit("guess-word", message, lobbyID);
 	};
 	return (
 		<Flex height="80vh" flexDirection="column" width="20%">
