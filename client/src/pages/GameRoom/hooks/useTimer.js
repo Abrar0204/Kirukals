@@ -10,13 +10,15 @@ const useTimer = (timeLimit, lobbyID) => {
 
 	useEffect(() => {
 		socket.on("timer", timeLeft => {
+			//Update Timer
 			setSeconds(timeLeft);
 		});
 		socket.on("end-timer", () => {
+			//Reset Timer
 			setSeconds(timeLimit);
 			if (socket.id === adminID) socket.emit("end-round", lobbyID);
 		});
-	}, [socket, setSeconds, adminID, lobbyID]);
+	}, [socket, setSeconds, adminID, lobbyID, timeLimit]);
 
 	return seconds;
 };

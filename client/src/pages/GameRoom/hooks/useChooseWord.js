@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { useSocket } from "../../../context/socketContext";
-import { useGame } from "../../../context/gameContext";
 
-const useChooseWord = onOpen => {
+const useChooseWord = (onOpen, onClose, lobbyID) => {
 	const socket = useSocket();
 
 	const [words, setWords] = useState([]);
-
-	const { updateData } = useGame();
 
 	useEffect(() => {
 		// For the player who is choosing a word
@@ -15,11 +12,15 @@ const useChooseWord = onOpen => {
 			setWords(words);
 			onOpen();
 		});
-	}, [socket, onOpen, updateData, setWords]);
+	}, [socket, onOpen, setWords]);
 
-	const resetWords = () => setWords([]);
+	const chooseWord = word => {
+		socket.emit("word-chosen", lobbyID, word);
+		onClose();
+		setWords([]);
+	};
 
-	return [words, resetWords];
+	return [words, chooseWord];
 };
 
 export default useChooseWord;

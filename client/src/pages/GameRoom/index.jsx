@@ -13,14 +13,14 @@ import { Flex } from "@chakra-ui/react";
 
 const GameRoom = ({ match }) => {
 	const socket = useSocket();
-	const { gameStarted, players, updateData } = useGame();
+	const { gameStarted, players } = useGame();
 
 	const history = useHistory();
 	const lobbyID = match.params.id;
 
 	useEffect(() => {
 		socket.emit("begin-round", lobbyID);
-	}, [socket, lobbyID, updateData]);
+	}, [socket, lobbyID]);
 
 	useEffect(() => {
 		if (!gameStarted) history.push(`/lobby/${lobbyID}`);
@@ -31,7 +31,7 @@ const GameRoom = ({ match }) => {
 			<InfoModal lobbyID={lobbyID} />
 			<LeaderBoard players={players} lobbyID={lobbyID} />
 			<Canvas />
-			<ChatBox lobbyID={match.params.id} />
+			<ChatBox lobbyID={lobbyID} />
 		</Flex>
 	);
 };

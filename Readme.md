@@ -11,10 +11,11 @@ Kirukkals is a online multiplayer guessing game. You can create lobbies with you
 ## To-do
 
 -   [x] Create Lobby System.
--   [x] Implement Chatting functionality.
+-   [x] Implement Chatting functionality so player can guess words.
 -   [x] Implement HTML canvas so the players can draw.
 -   [x] Implement turn based system so each player has a chance to draw.
 -   [x] Implement timer so at the end of round the current player changes.
+-   [ ] Implement scoring system and leaderboard.
 -   [ ] Use WebRTC to create p2p connection between players.
 -   [ ] Stream canvas to players.
 -   [ ] Implement Resopsiveness so that players can play in mobile.

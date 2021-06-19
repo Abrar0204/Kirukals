@@ -1,5 +1,4 @@
 import React from "react";
-import { useSocket } from "../../../context/socketContext";
 
 import useWaitForWord from "../hooks/useWaitForWord";
 import useChooseWord from "../hooks/useChooseWord";
@@ -17,17 +16,10 @@ import {
 } from "@chakra-ui/react";
 
 const InfoModal = ({ lobbyID }) => {
-	const socket = useSocket();
 	const { isOpen, onClose, onOpen } = useDisclosure();
 
-	const [words, resetWords] = useChooseWord(onOpen);
+	const [words, chooseWord] = useChooseWord(onOpen, onClose, lobbyID);
 	const playerName = useWaitForWord(onOpen, onClose);
-
-	const chooseWord = word => {
-		socket.emit("word-chosen", lobbyID, word);
-		onClose();
-		resetWords();
-	};
 
 	return (
 		<Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>

@@ -21,8 +21,11 @@ const LeaderBoard = ({ players, lobbyID }) => {
 						border="ActiveBorder"
 					>
 						<Avatar name={player.playerName} marginRight="4" />
-						<Text as="h3" size="md">
+						<Text as="h3" size="lg">
 							{player.playerName}
+						</Text>
+						<Text as="h3" size="md">
+							score: {player.score}
 						</Text>
 					</Box>
 				))}

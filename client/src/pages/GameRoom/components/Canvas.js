@@ -1,10 +1,22 @@
 import React, { useEffect, useRef } from "react";
 //ChakraUI
 import { Box } from "@chakra-ui/layout";
+
 const Canvas = () => {
+	const [canvasRef, boxRef] = useCanvas();
+
+	return (
+		<Box height="80vh" width="57%" bg="gray.100" ref={boxRef}>
+			<canvas ref={canvasRef}></canvas>
+		</Box>
+	);
+};
+
+const useCanvas = () => {
 	const canvasRef = useRef();
 	const boxRef = useRef();
 	const painting = useRef(false);
+
 	useEffect(() => {
 		let ctx = canvasRef.current.getContext("2d");
 		//Resize Canvas
@@ -37,20 +49,13 @@ const Canvas = () => {
 			//Draw line
 			ctx.lineTo(e.offsetX, e.offsetY);
 			ctx.stroke();
-			//Reset position to start
-			ctx.beginPath();
-			ctx.moveTo(e.offsetX, e.offsetY);
 		};
 		canvasRef.current.addEventListener("mousedown", startDrawing);
 		canvasRef.current.addEventListener("mouseup", endDrawing);
 		canvasRef.current.addEventListener("mousemove", draw);
 	}, []);
 
-	return (
-		<Box height="80vh" width="57%" bg="gray.100" ref={boxRef}>
-			<canvas ref={canvasRef}></canvas>
-		</Box>
-	);
+	return [canvasRef, boxRef];
 };
 
 export default Canvas;
