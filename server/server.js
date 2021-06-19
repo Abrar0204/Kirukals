@@ -10,7 +10,7 @@ const UsernameGenerator = require("username-generator");
 const wordgen = require("pic-word-gen");
 
 const lobbies = {};
-const timePerRound = 10;
+const timePerRound = 60;
 
 io.on("connection", socket => {
 	const id = socket.id.slice(0, 3);
