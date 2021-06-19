@@ -7,7 +7,7 @@ import { useSocket } from "../../context/socketContext";
 import ChatBox from "./components/ChatBox";
 import Canvas from "./components/Canvas";
 import LeaderBoard from "./components/LeaderBoard";
-import ChooseWord from "./components/ChooseWord";
+import InfoModal from "./components/InfoModal";
 //ChakraUI
 import { Flex } from "@chakra-ui/react";
 
@@ -20,10 +20,6 @@ const GameRoom = ({ match }) => {
 
 	useEffect(() => {
 		socket.emit("begin-round", lobbyID);
-		socket.on("player-choosing-word", currentPlayer => {
-			console.log(currentPlayer + " is choosing");
-			updateData("currentPlayer", currentPlayer);
-		});
 	}, [socket, lobbyID, updateData]);
 
 	useEffect(() => {
@@ -32,7 +28,7 @@ const GameRoom = ({ match }) => {
 
 	return (
 		<Flex height="100vh" alignItems="center" justifyContent="space-evenly">
-			<ChooseWord lobbyID={lobbyID} />
+			<InfoModal lobbyID={lobbyID} />
 			<LeaderBoard players={players} lobbyID={lobbyID} />
 			<Canvas />
 			<ChatBox lobbyID={match.params.id} />

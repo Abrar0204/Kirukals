@@ -8,27 +8,36 @@ const GameProvider = ({ children }) => {
 	const [gameStarted, setGameStarted] = useState(false);
 	const [chosenWordLength, setChosenWordLength] = useState(0);
 	const [currentPlayer, setCurrentPlayer] = useState("");
-	const updateData = useCallback((option, data) => {
-		switch (option) {
-			case "players":
-				setPlayers(data);
-				break;
-			case "adminID":
-				setAdminID(data);
-				break;
-			case "gameStarted":
-				setGameStarted(data);
-				break;
-			case "chosenWordLength":
-				setChosenWordLength(data);
-				break;
-			case "currentPlayer":
-				setCurrentPlayer(data);
-				break;
-			default:
-				break;
-		}
-	}, []);
+	const updateData = useCallback(
+		(option, data) => {
+			switch (option) {
+				case "players":
+					setPlayers(data);
+					break;
+				case "adminID":
+					setAdminID(data);
+					break;
+				case "gameStarted":
+					setGameStarted(data);
+					break;
+				case "chosenWordLength":
+					setChosenWordLength(data);
+					break;
+				case "currentPlayer":
+					setCurrentPlayer(data);
+					break;
+				default:
+					break;
+			}
+		},
+		[
+			setPlayers,
+			setAdminID,
+			setGameStarted,
+			setChosenWordLength,
+			setCurrentPlayer,
+		]
+	);
 	return (
 		<GameContext.Provider
 			value={{

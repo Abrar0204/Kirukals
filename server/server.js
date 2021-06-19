@@ -71,7 +71,7 @@ io.on("connection", socket => {
 			lobbies[lobbyID].turns.push(playerKey)
 		);
 
-		lobbies[lobbyID].currentPlayerIndex = lobbies[lobbyID].turns.length - 1;
+		lobbies[lobbyID].currentPlayerIndex = 0;
 
 		socket.to(lobbyID).emit("start-game");
 	});
@@ -89,34 +89,40 @@ io.on("connection", socket => {
 		];
 		// console.log(socket.id);
 		io.to(currentPlayer).emit("choose-word", words);
-		io.to(lobbyID).emit("player-choosing-word", currentPlayer);
+		io.to(lobbyID).emit(
+			"player-choosing-word",
+			currentPlayer,
+			lobby.players[currentPlayer].playerName
+		);
 	});
 
 	//Player Chose Word
 	socket.on("word-chosen", (lobbyID, word) => {
 		let lobby = lobbies[lobbyID];
 		lobby.correctWord = word;
-		lobby.timeLimit = 60;
+
+		//Timer
+		lobby.timeLimit = 10;
+		//Send timeleft to every player with a interval of one second
 		lobby.interval = setInterval(() => {
 			lobby.timeLimit--;
-			if (lobby.timeLimit < 0) {
-				lobby.timeLimit = 60;
+			io.to(lobbyID).emit("timer", lobby.timeLimit);
+
+			if (lobby.timeLimit === 0) {
+				lobby.timeLimit = 10;
 				clearInterval(lobby.interval);
 				io.to(lobbyID).emit("end-timer");
 			}
-			io.to(lobbyID).emit("timer");
 		}, 1000);
-		io.to(lobbyID).emit("start-timer");
+
 		socket.to(lobbyID).emit("word-chosen", word.length);
 	});
 
 	//Guess Word
 	socket.on("guess-word", (word, lobbyID) => {
-		// console.log(lobbies[lobbyID].players);
-
 		let lobby = lobbies[lobbyID];
-		// console.log(socket.id, lobby.turns[lobby.currentPlayerIndex]);
 		let playerName = lobby.players[socket.id].playerName;
+
 		//If player send message before choosing word
 		if (lobby.correctWord === undefined) {
 			return io
@@ -134,20 +140,14 @@ io.on("connection", socket => {
 		}
 	});
 
-	socket.on("time-up", lobbyID => {
-		console.log("time up by " + socket.id);
-		//Reset the timer
-		io.to(lobbyID).emit("reset-timer");
-		// let prevPlayerIndex = lobbies[lobbyID].currentPlayerIndex;
-		// // Only execute once (for current player)
-		// if (lobbies[lobbyID].turns[prevPlayerIndex] !== socket.id) return;
-
+	//End Round
+	socket.on("end-round", lobbyID => {
 		//Change current player
-		let currentPlayerIndex = lobbies[lobbyID].currentPlayerIndex - 1;
+		let currentPlayerIndex = lobbies[lobbyID].currentPlayerIndex + 1;
 
 		//Reset Round - !TODO
-		if (currentPlayerIndex < 0) {
-			currentPlayerIndex = lobbies[lobbyID].turns.length - 1;
+		if (currentPlayerIndex === lobbies[lobbyID].turns.length) {
+			currentPlayerIndex = 0;
 		}
 
 		//Update lobby to next player
@@ -163,11 +163,12 @@ io.on("connection", socket => {
 		];
 
 		io.to(currentPlayer).emit("choose-word", words);
-		io.to(lobbyID).emit("player-choosing-word", currentPlayer);
+		io.to(lobbyID).emit(
+			"player-choosing-word",
+			currentPlayer,
+			lobby.players[currentPlayer].playerName
+		);
 	});
-
-	//End Round
-	socket.on("end-round", () => {});
 
 	//Disoconnectiong players
 	socket.on("disconnecting", () => {
