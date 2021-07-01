@@ -14,7 +14,7 @@ const timePerRound = 60;
 
 io.on("connection", socket => {
 	const id = socket.id.slice(0, 3);
-	// console.log(id + " just connected");
+	console.log(id + " just connected");
 
 	//When Players join a room
 	socket.on("join-room", lobbyID => {
@@ -56,7 +56,7 @@ io.on("connection", socket => {
 				},
 			};
 		}
-		console.log(lobbies[lobbyID].players);
+
 		io.in(lobbyID).emit(
 			"player-joined",
 			lobbies[lobbyID].players,
@@ -93,7 +93,7 @@ io.on("connection", socket => {
 			wordgen.generateWord(),
 			wordgen.generateWord(),
 		];
-		// console.log(socket.id);
+
 		io.to(currentPlayer).emit("choose-word", words);
 		io.to(lobbyID).emit(
 			"player-choosing-word",
